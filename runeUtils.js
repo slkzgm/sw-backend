@@ -18,7 +18,7 @@ function atLeastOneAvailable(prohibitedStats, statsToCheck) {
     return statsToCheck.some(value => !prohibitedStats.includes(value));
 }
 
-export function logRune(rune) {
+export function formatRune(rune) {
     const isAncient = utils.isAncient(rune);
     const efficiency = utils.getRuneEfficiency(rune);
 
@@ -44,10 +44,10 @@ export function logRune(rune) {
 
 function logConfigs(config) {
     return {
-        percent: config.percents.map(logRune),
-        speed: config.speed.map(logRune),
-        flat: config.flat.map(logRune),
-        others: config.others.map(logRune)
+        percent: config.percents.map(formatRune),
+        speed: config.speed.map(formatRune),
+        flat: config.flat.map(formatRune),
+        others: config.others.map(formatRune)
     }
 }
 
@@ -65,8 +65,10 @@ function updateRuneWithNewStat(rune, enchantedIndex, newStat) {
     newRune.sec_eff[enchantedIndex][1] = utils.enchanted_gem[newStat].range[5].max;
     newRune.sec_eff[enchantedIndex][2] = 1;
     const maxGrindedRune = applyMaxGrinds(newRune);
-    maxGrindedRune.efficiencyMax = Number(utils.getRuneEfficiency(maxGrindedRune).max);
-    return maxGrindedRune;
+    const efficiency = utils.getRuneEfficiency(maxGrindedRune);
+    maxGrindedRune.efficiencyMax = Number(efficiency.max);
+    maxGrindedRune.efficiencyCurrent = Number(efficiency.current);
+    return formatRune(maxGrindedRune);
 }
 
 function calculatePercents(rune, enchantedIndex, prohibitedStats) {
@@ -124,7 +126,7 @@ export function simulateMax(rune) {
     const maxGrindedRune = applyMaxGrinds(rune);
     maxGrindedRune.efficiencyMax = Number(utils.getRuneEfficiency(maxGrindedRune).max);
     const config = {
-        base: [maxGrindedRune],
+        base: [formatRune(maxGrindedRune)],
         percents: [],
         speed: [],
         flat: [],
@@ -159,6 +161,9 @@ export function simulateMax(rune) {
     config.speed.sort((a, b) => b.efficiencyMax - a.efficiencyMax);
     config.flat.sort((a, b) => b.efficiencyMax - a.efficiencyMax);
     config.others.sort((a, b) => b.efficiencyMax - a.efficiencyMax);
+
+    // ADD BEST CONFIG
+    config.best = getMostEfficientConfig(config);
 
     return config;
 }

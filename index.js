@@ -1,26 +1,43 @@
 import express from 'express';
 import multer from 'multer';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import cors from 'cors';
-import {simulateMax, getMostEfficientConfig, logRune} from './runeUtils.js';
+import { simulateMax } from './runeUtils.js';
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
 app.use(express.json());
 
-app.post('/upload', upload.single('file'), async (req, res) => {
+const validateJson = (req, res, next) => {
+    const rawData = req.file.buffer.toString('utf-8');
+    let data;
     try {
-        const filePath = path.join(__dirname, req.file.path);
-        const rawData = await fs.readFile(filePath, 'utf-8');
-        const data = JSON.parse(rawData);
+        data = JSON.parse(rawData);
+    } catch (err) {
+        return res.status(400).json({ error: 'Invalid JSON format' });
+    }
 
+    if (data.command !== 'HubUserLogin') {
+        console.log('Invalid command value');
+        return res.status(400).json({ error: 'Invalid JSON format' });
+    }
+    if (!Array.isArray(data.runes)) {
+        console.log('"runes" should be an array');
+        return res.status(400).json({ error: 'Invalid JSON format' });
+    }
+    if (!Array.isArray(data.unit_list)) {
+        console.log('"unit_list" should be an array');
+        return res.status(400).json({ error: 'Invalid JSON format' });
+    }
+
+    req.validatedJson = data;
+    next();
+};
+
+app.post('/upload', upload.single('file'), validateJson, async (req, res) => {
+    try {
+        const data = req.validatedJson;
         const { runes, unit_list } = data;
         const mobsRunes = unit_list.flatMap(mob => mob.runes);
         const allRunes = [...runes, ...mobsRunes];
@@ -28,13 +45,12 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         let allRunesConfig = [];
         allRunes.forEach(rune => {
             const runeConfigs = simulateMax(rune);
-            const bestConfig = getMostEfficientConfig(runeConfigs);
-            allRunesConfig.push({ original: rune, bestConfig });
+            allRunesConfig.push(runeConfigs);
         });
 
-        allRunesConfig.sort((a, b) => b.bestConfig.efficiencyMax - a.bestConfig.efficiencyMax);
+        allRunesConfig.sort((a, b) => b.best.efficiencyMax - a.best.efficiencyMax);
 
-        res.json(allRunesConfig.slice(0, 50).map(config => logRune(config.bestConfig)));
+        res.json(allRunesConfig);
     } catch (err) {
         res.status(500).send(err.toString());
     }
