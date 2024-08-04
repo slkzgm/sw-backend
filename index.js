@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import { simulateMax } from './runeUtils.js';
+import bodyParser from 'body-parser';
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -10,6 +11,9 @@ app.use(cors({
     origin: 'https://sw-rune-analyzer.vercel.app'
 }));
 app.use(express.json());
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const validateJson = (req, res, next) => {
     const rawData = req.file.buffer.toString('utf-8');
