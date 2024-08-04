@@ -2,18 +2,28 @@ import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 import { simulateMax } from './runeUtils.js';
-import bodyParser from 'body-parser';
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.use(cors({
-    origin: 'https://sw-rune-analyzer.vercel.app'
-}));
-app.use(express.json());
+const allowedOrigins = [
+    'https://sw-rune-analyzer.vercel.app'
+];
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+}));
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const validateJson = (req, res, next) => {
     const rawData = req.file.buffer.toString('utf-8');
