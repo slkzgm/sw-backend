@@ -64,7 +64,7 @@ function logConfigs(config) {
 function applyMaxGrinds(rune) {
     const newRune = { ...rune, sec_eff: rune.sec_eff.map(eff => [...eff]) };
     newRune.sec_eff.forEach(eff => {
-        eff[3] = eff[0] < 8 ? utils.grindstone[eff[0]].range[5].max : 0;
+        eff[3] = eff[0] <= 8 ? utils.grindstone[eff[0]].range[5].max : 0;
     });
     return newRune;
 }
@@ -215,10 +215,8 @@ function getMostEfficientConfig(runeConfigs) {
         index++;
         const runeConfigs = simulateMax(rune);
         const bestConfig = getMostEfficientConfig(runeConfigs);
-        if (bestConfig.efficiencyMax > 130) {
-            console.log(logRune(rune));
-            console.log(logRune(bestConfig));
-        }
+        console.log(logRune(rune));
+        console.log(logRune(bestConfig));
     });
     console.log(`${index} runes scrolled`);
 })();
