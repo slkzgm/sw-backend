@@ -6,7 +6,9 @@ import { simulateMax } from './runeUtils.js';
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://sw-rune-analyzer.vercel.app'
+}));
 app.use(express.json());
 
 const validateJson = (req, res, next) => {
