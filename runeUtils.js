@@ -126,7 +126,7 @@ export function simulateMax(rune) {
     const maxGrindedRune = applyMaxGrinds(rune);
     maxGrindedRune.efficiencyMax = Number(utils.getRuneEfficiency(maxGrindedRune).max);
     const config = {
-        base: [formatRune(maxGrindedRune)],
+        base: [formatRune(rune), formatRune(maxGrindedRune)],
         percents: [],
         speed: [],
         flat: [],
