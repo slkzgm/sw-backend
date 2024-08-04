@@ -29,7 +29,6 @@ function atLeastOneAvailable(prohibitedStats, statsToCheck) {
 }
 
 function logRune(rune) {
-    console.log(rune);
     const isAncient = utils.isAncient(rune);
     const efficiency = utils.getRuneEfficiency(rune);
 
@@ -63,12 +62,11 @@ function logConfigs(config) {
 }
 
 function applyMaxGrinds(rune) {
-    rune.sec_eff.forEach(eff => {
-        if (eff[0] > 8) return eff;
-        eff[3] = utils.grindstone[eff[0]].range[5].max;
-        return eff;
+    const newRune = { ...rune, sec_eff: rune.sec_eff.map(eff => [...eff]) };
+    newRune.sec_eff.forEach(eff => {
+        eff[3] = eff[0] < 8 ? utils.grindstone[eff[0]].range[5].max : 0;
     });
-    return rune;
+    return newRune;
 }
 
 function updateRuneWithNewStat(rune, enchantedIndex, newStat) {
@@ -134,8 +132,9 @@ function simulateMax(rune) {
     }
 
     const maxGrindedRune = applyMaxGrinds(rune);
+    maxGrindedRune.efficiencyMax = Number(utils.getRuneEfficiency(maxGrindedRune).max);
     const config = {
-        base: maxGrindedRune,
+        base: [maxGrindedRune],
         percents: [],
         speed: [],
         flat: [],
@@ -201,8 +200,8 @@ function getMostEfficientConfig(runeConfigs) {
     const mobsRunes = unit_list.flatMap(mob => mob.runes);
     const allRunes = [...runes, ...mobsRunes];
 
-    const runeTest = allRunes[0];
-    const runeTestConfigs = simulateMax(runeTest);
+    // const runeTest = allRunes.filter(rune => rune.set_id === 4 && rune.slot_no === 4 && rune.upgrade_curr === 0)[0];
+    // const runeTestConfigs = simulateMax(runeTest);
 
     // console.log(logRune(runeTest));
     // console.log(logConfigs(runeTestConfigs));
@@ -211,12 +210,15 @@ function getMostEfficientConfig(runeConfigs) {
     // const bestConfig = getMostEfficientConfig(runeTestConfigs);
     // console.log(logRune(bestConfig));
 
+    let index = 0;
     allRunes.forEach(rune => {
-        if (rune.upgrade_curr < 12) return;
+        index++;
         const runeConfigs = simulateMax(rune);
         const bestConfig = getMostEfficientConfig(runeConfigs);
-        console.log(logRune(rune));
-        console.log(logRune(bestConfig));
-        console.log('\n');
+        if (bestConfig.efficiencyMax > 130) {
+            console.log(logRune(rune));
+            console.log(logRune(bestConfig));
+        }
     });
+    console.log(`${index} runes scrolled`);
 })();
