@@ -51,6 +51,10 @@ const validateJson = (req, res, next) => {
     next();
 };
 
+app.get('/', (req, res) => {
+   res.json('HELLO SUMMONER') ;
+});
+
 app.post('/upload', upload.single('file'), validateJson, async (req, res) => {
     try {
         const data = req.validatedJson;
