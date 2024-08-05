@@ -1930,16 +1930,16 @@ const craftMaterial = {
     7001: 'Pure Magic Crystal',
 };
 
-const getMonsterName = (id) => {
+export const getMonsterName = (id) => {
     if (id) {
-        if (this.monster.names[id]) {
-            return this.monster.names[id];
+        if (monster.names[id]) {
+            return monster.names[id];
         }
         let family = Number(id.toString().substr(0, 3));
 
-        if (this.monster.names[family]) {
+        if (monster.names[family]) {
             let attribute = Number(id.toString().slice(-1));
-            return `${this.monster.names[family]} (${this.monster.attributes[attribute]})`;
+            return `${monster.names[family]} (${monster.attributes[attribute]})`;
         }
         return 'Unknown Monster';
     }

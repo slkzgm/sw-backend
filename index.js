@@ -63,12 +63,14 @@ app.post('/upload', upload.single('file'), validateJson, validateQuality, async 
         const data = req.validatedJson;
         const { runes, unit_list } = data;
         const quality = req.quality || 5;
-        const mobsRunes = unit_list.flatMap(mob => mob.runes);
+        const mobsRunes = unit_list.flatMap(mob =>
+            mob.runes.map(rune => ({ ...rune, occupiedId: mob.unit_id }))
+        );
         const allRunes = [...runes, ...mobsRunes];
 
         let allRunesConfig = [];
         allRunes.forEach(rune => {
-            const runeConfigs = simulateMax(rune, quality);
+            const runeConfigs = simulateMax(rune, quality, unit_list);
             allRunesConfig.push(runeConfigs);
         });
 

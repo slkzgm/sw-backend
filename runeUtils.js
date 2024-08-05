@@ -2,6 +2,7 @@ import * as utils from "./mapping.js";
 
 // GEM AND GRINDS TO USE GLOBAL VAR
 let gemsAndGrindsQuality = 5;
+let unitList = [];
 
 const STAT_INDICES = {
     HP_FLAT: 1,
@@ -26,7 +27,7 @@ export function formatRune(rune) {
     const efficiency = utils.getRuneEfficiency(rune);
 
     return {
-        id: rune.id,
+        id: rune.rune_id,
         set: utils.runeData.sets[rune.set_id],
         slot: rune.slot_no,
         ancient: isAncient,
@@ -42,7 +43,8 @@ export function formatRune(rune) {
             return base + enhance + gem;
         }),
         efficiency,
-        efficiencyMax: Number(efficiency.max)
+        efficiencyMax: Number(efficiency.max),
+        location: rune.occupiedId ? utils.getMonsterName(unitList.filter(unit => unit.unit_id === rune.occupiedId)[0].unit_master_id) : 'storage'
     }
 }
 
@@ -111,8 +113,10 @@ function calculateOthers(rune, enchantedIndex, prohibitedStats) {
     return results;
 }
 
-export function simulateMax(rune, quality) {
+export function simulateMax(rune, quality, unit_list) {
     gemsAndGrindsQuality = quality;
+    unitList = unit_list;
+
     const { pri_eff, prefix_eff, sec_eff } = rune;
 
     const enchanted = sec_eff.findIndex(eff => eff[2] === 1); // return already enchanted stat index, or -1 if none
