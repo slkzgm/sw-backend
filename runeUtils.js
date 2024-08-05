@@ -26,12 +26,13 @@ export function formatRune(rune) {
     const efficiency = utils.getRuneEfficiency(rune);
 
     return {
+        id: rune.id,
         set: utils.runeData.sets[rune.set_id],
         slot: rune.slot_no,
         ancient: isAncient,
         stars: isAncient ? rune.class - 10 : rune.class,
         level: rune.upgrade_curr,
-        quality: utils.runeData.quality[rune.rank],
+        quality: utils.runeData.quality[rune.extra],
         primary: utils.getRuneEffect(rune.pri_eff),
         innate: utils.getRuneEffect(rune.prefix_eff),
         secondary: rune.sec_eff.map(eff => {
