@@ -44,20 +44,31 @@ const validateJson = (req, res, next) => {
     next();
 };
 
+const validateQuality = (req, res, next) => {
+    const quality = parseInt(req.body.quality);
+    if (!quality || isNaN(quality) || quality < 1 || quality > 5) {
+        req.quality = 5;
+    } else {
+        req.quality = quality;
+    }
+    next();
+};
+
 app.get('/', (req, res) => {
    res.json('HELLO SUMMONER') ;
 });
 
-app.post('/upload', upload.single('file'), validateJson, async (req, res) => {
+app.post('/upload', upload.single('file'), validateJson, validateQuality, async (req, res) => {
     try {
         const data = req.validatedJson;
         const { runes, unit_list } = data;
+        const quality = req.quality || 5;
         const mobsRunes = unit_list.flatMap(mob => mob.runes);
         const allRunes = [...runes, ...mobsRunes];
 
         let allRunesConfig = [];
         allRunes.forEach(rune => {
-            const runeConfigs = simulateMax(rune);
+            const runeConfigs = simulateMax(rune, quality);
             allRunesConfig.push(runeConfigs);
         });
 

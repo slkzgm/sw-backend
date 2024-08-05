@@ -1,5 +1,8 @@
 import * as utils from "./mapping.js";
 
+// GEM AND GRINDS TO USE GLOBAL VAR
+let gemsAndGrindsQuality = 5;
+
 const STAT_INDICES = {
     HP_FLAT: 1,
     ATK_FLAT: 3,
@@ -54,7 +57,7 @@ function logConfigs(config) {
 function applyMaxGrinds(rune) {
     const newRune = { ...rune, sec_eff: rune.sec_eff.map(eff => [...eff]) };
     newRune.sec_eff.forEach(eff => {
-        eff[3] = eff[0] <= 8 ? utils.grindstone[eff[0]].range[5].max : 0;
+        eff[3] = eff[0] <= 8 ? utils.grindstone[eff[0]].range[gemsAndGrindsQuality].max : 0;
     });
     return newRune;
 }
@@ -62,7 +65,7 @@ function applyMaxGrinds(rune) {
 function updateRuneWithNewStat(rune, enchantedIndex, newStat) {
     const newRune = { ...rune, sec_eff: rune.sec_eff.map(arr => [...arr]) }; // Deep copy only the necessary part
     newRune.sec_eff[enchantedIndex][0] = newStat;
-    newRune.sec_eff[enchantedIndex][1] = utils.enchanted_gem[newStat].range[5].max;
+    newRune.sec_eff[enchantedIndex][1] = utils.enchanted_gem[newStat].range[gemsAndGrindsQuality].max;
     newRune.sec_eff[enchantedIndex][2] = 1;
     const maxGrindedRune = applyMaxGrinds(newRune);
     const efficiency = utils.getRuneEfficiency(maxGrindedRune);
@@ -107,7 +110,8 @@ function calculateOthers(rune, enchantedIndex, prohibitedStats) {
     return results;
 }
 
-export function simulateMax(rune) {
+export function simulateMax(rune, quality) {
+    gemsAndGrindsQuality = quality;
     const { pri_eff, prefix_eff, sec_eff } = rune;
 
     const enchanted = sec_eff.findIndex(eff => eff[2] === 1); // return already enchanted stat index, or -1 if none
