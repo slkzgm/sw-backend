@@ -25,6 +25,7 @@ function atLeastOneAvailable(prohibitedStats, statsToCheck) {
 export function formatRune(rune) {
     const isAncient = utils.isAncient(rune);
     const efficiency = utils.getRuneEfficiency(rune);
+    const location = unitList.length && rune.occupiedId ? utils.getMonsterName(unitList.filter(unit => unit.unit_id === rune.occupiedId)[0].unit_master_id) : 'storage'
 
     return {
         id: rune.rune_id,
@@ -43,8 +44,10 @@ export function formatRune(rune) {
             return base + enhance + gem;
         }),
         efficiency,
+        efficiencyCurrent: Number(efficiency.current),
         efficiencyMax: Number(efficiency.max),
-        location: rune.occupiedId ? utils.getMonsterName(unitList.filter(unit => unit.unit_id === rune.occupiedId)[0].unit_master_id) : 'storage'
+        occupiedId: rune.occupiedId || 0,
+        location: location
     }
 }
 

@@ -54,8 +54,18 @@ const validateQuality = (req, res, next) => {
     next();
 };
 
+const validateRunesArray = (req, res, next) => {
+    const { runes } = req.body;
+    if (!Array.isArray(runes)) {
+        console.log('"runes" should be an array');
+        return res.status(400).json({ error: 'Invalid runes array format' });
+    }
+    req.validatedRunes = runes;
+    next();
+};
+
 app.get('/', (req, res) => {
-   res.json('HELLO SUMMONER') ;
+    res.json('HELLO SUMMONER') ;
 });
 
 app.post('/upload', upload.single('file'), validateJson, validateQuality, async (req, res) => {
@@ -77,6 +87,27 @@ app.post('/upload', upload.single('file'), validateJson, validateQuality, async 
         allRunesConfig.sort((a, b) => b.best.efficiencyMax - a.best.efficiencyMax);
 
         res.json(allRunesConfig);
+    } catch (err) {
+        res.status(500).send(err.toString());
+    }
+});
+
+app.post('/get-efficiency', validateRunesArray, async (req, res) => {
+    try {
+        const runes = req.validatedRunes;
+
+        const allRunes = runes.map(rune => {
+            const effLegMax = simulateMax(rune, 5).best.efficiencyMax;
+            const effHeroMax = simulateMax(rune, 5).best.efficiencyMax;
+            const formatted = effLegMax.base[0]
+
+            formatted.efficiencyMaxLeg = effLegMax;
+            formatted.efficiencyMaxHero = effHeroMax;
+
+            return formatted;
+        });
+
+        res.json(allRunes);
     } catch (err) {
         res.status(500).send(err.toString());
     }

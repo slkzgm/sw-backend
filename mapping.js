@@ -1945,31 +1945,7 @@ export const getMonsterName = (id) => {
     }
     return false;
 };
-// export const getRuneEfficiency = (rune, toFixed = 2) => {
-//     let ratio = 0.0;
-//
-//     // main stat
-//     ratio +=
-//         runeData.mainstat[rune.pri_eff[0]].max[isAncient(rune) ? rune.class - 10 : rune.class] / runeData.mainstat[rune.pri_eff[0]].max[6];
-//
-//     // sub stats
-//     rune.sec_eff.forEach((stat) => {
-//         let value = stat[3] && stat[3] > 0 ? stat[1] + stat[3] : stat[1];
-//         ratio += value / runeData.substat[stat[0]].max[6];
-//     });
-//
-//     // innate stat
-//     if (rune.prefix_eff && rune.prefix_eff[0] > 0) {
-//         ratio += rune.prefix_eff[1] / runeData.substat[rune.prefix_eff[0]].max[6];
-//     }
-//
-//     let efficiency = (ratio / 2.8) * 100;
-//
-//     return {
-//         current: ((ratio / 2.8) * 100).toFixed(toFixed),
-//         max: (efficiency + ((Math.max(Math.ceil((12 - rune.upgrade_curr) / 3.0), 0) * 0.2) / 2.8) * 100).toFixed(toFixed),
-//     };
-// };
+
 export const getRuneEfficiency = (rune, toFixed = 2) => {
     let ratio = 0.0;
 
