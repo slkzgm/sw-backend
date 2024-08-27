@@ -13,7 +13,7 @@ const corsOptions = {
     credentials: true
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
@@ -97,9 +97,10 @@ app.post('/get-efficiency', validateRunesArray, async (req, res) => {
         const runes = req.validatedRunes;
 
         const allRunes = runes.map(rune => {
-            const effLegMax = simulateMax(rune, 5).best.efficiencyMax;
-            const effHeroMax = simulateMax(rune, 5).best.efficiencyMax;
-            const formatted = effLegMax.base[0]
+            const simulatedMax = simulateMax(rune, 5, []);
+            const effLegMax = simulatedMax.best.efficiencyMax;
+            const effHeroMax = simulateMax(rune, 4, []).best.efficiencyMax;
+            const formatted = simulatedMax.base[0];
 
             formatted.efficiencyMaxLeg = effLegMax;
             formatted.efficiencyMaxHero = effHeroMax;
