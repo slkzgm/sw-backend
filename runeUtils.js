@@ -35,6 +35,7 @@ export function formatRune(rune) {
         stars: isAncient ? rune.class - 10 : rune.class,
         level: rune.upgrade_curr,
         quality: utils.runeData.quality[rune.extra],
+        rank: rune.rank,
         primary: utils.getRuneEffect(rune.pri_eff),
         innate: utils.getRuneEffect(rune.prefix_eff),
         secondary: rune.sec_eff.map(eff => {
