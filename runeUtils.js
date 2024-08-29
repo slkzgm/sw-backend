@@ -47,7 +47,7 @@ export function formatRune(rune) {
         efficiency,
         efficiencyCurrent: Number(efficiency.current),
         efficiencyMax: Number(efficiency.max),
-        occupiedId: rune.occupiedId || 0,
+        occupiedId: rune.occupied_id || 0,
         location: location
     }
 }
